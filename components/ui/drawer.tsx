@@ -24,12 +24,16 @@ type InstagramStoryDrawerProps = {
   isVisible: boolean;
   onClose: () => void;
   challenge: Challenge | null;
+  image: string | null;
+  markChallengeAsCompleted: () => void;
 };
 
 const InstagramStoryDrawer = ({
   isVisible,
   onClose,
   challenge,
+  image,
+  markChallengeAsCompleted,
 }: InstagramStoryDrawerProps) => {
   const ref = useRef<View>(null);
 
@@ -81,7 +85,7 @@ const InstagramStoryDrawer = ({
     }
   };
 
-  if (!challenge) {
+  if (!challenge || !image) {
     return null;
   }
 
@@ -261,7 +265,7 @@ const InstagramStoryDrawer = ({
             >
               <Image
                 source={{
-                  uri: "https://placehold.co/225x245/000000/ffffff.png",
+                  uri: image,
                 }}
                 style={{
                   width: "100%",
@@ -310,6 +314,7 @@ const InstagramStoryDrawer = ({
             </LinearGradient>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={markChallengeAsCompleted}
             style={{
               backgroundColor: "#8000FF",
               alignItems: "center",

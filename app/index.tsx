@@ -1,5 +1,6 @@
 import Icons from "@/components/icons";
 import InstagramStoryDrawer from "@/components/ui/drawer";
+import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
   ImageBackground,
@@ -43,6 +44,8 @@ export default function DisneylandChallengeScreen() {
     },
   ]);
 
+  const [image, setImage] = useState<string | null>(null);
+
   const completedChallenges = challenges.filter(
     (challenge) => challenge.isCompleted
   );
@@ -53,9 +56,35 @@ export default function DisneylandChallengeScreen() {
     null
   );
 
-  const handleOpenDrawer = (challenge: Challenge) => {
+  const handleChallenge = async (challenge: Challenge) => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [16, 19],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+
+    // TODO: verify image
+
     setIsDrawerVisible(true);
     setSelectedChallenge(challenge);
+  };
+
+  const handleMarkChallengeAsCompleted = () => {
+    if (selectedChallenge) {
+      setChallenges((prevChallenges) =>
+        prevChallenges.map((challenge) =>
+          challenge.id === selectedChallenge.id
+            ? { ...challenge, isCompleted: true }
+            : challenge
+        )
+      );
+      setIsDrawerVisible(false);
+    }
   };
 
   return (
@@ -68,7 +97,9 @@ export default function DisneylandChallengeScreen() {
       <InstagramStoryDrawer
         isVisible={isDrawerVisible}
         onClose={() => setIsDrawerVisible(false)}
+        image={image}
         challenge={selectedChallenge}
+        markChallengeAsCompleted={handleMarkChallengeAsCompleted}
       />
       <ScrollView>
         <ImageBackground
@@ -297,9 +328,7 @@ export default function DisneylandChallengeScreen() {
                     padding: 6,
                     borderRadius: 8,
                   }}
-                  onPress={() => {
-                    handleOpenDrawer(item);
-                  }}
+                  onPress={() => handleChallenge(item)}
                 >
                   <Icons.Upload />
                 </TouchableOpacity>
