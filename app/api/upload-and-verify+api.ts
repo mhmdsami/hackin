@@ -32,20 +32,19 @@ Your job is to:
 2. Determine how well it matches the prompt.
 3. Return a score from 0 to 10.
 4. Return a status:
-   - APPROVED: if the image clearly matches the prompt (score >= 7).
-   - REJECTED: if the image clearly does not match the prompt (score <= 3).
-   - MODERATION_REQUIRED: if the match is uncertain or partial (score between 4 and 6).
+   - APPROVED: if the score is 7 or higher.
+   - REJECTED: if the score is below 7.
 
-You must return a JSON object with two keys: "score" and "status".
-Do not explain your reasoning. Return only the JSON response.
-      `.trim(),
+Return a JSON object with exactly two keys: "score" and "status".
+Do not explain your reasoning. Only return the JSON.
+`.trim(),
         },
         {
           role: "user",
           content: [
             {
               type: "text",
-              text: `Prompt: "${prompt}"\nEvaluate this image based on how well it matches the prompt. Return score (0–10) and status.`,
+              text: `Prompt: "${prompt}"\nEvaluate this image and respond with a score and status.`,
             },
             {
               type: "image_url",
@@ -68,9 +67,9 @@ Do not explain your reasoning. Return only the JSON response.
               },
               status: {
                 type: "string",
-                enum: ["APPROVED", "REJECTED", "MODERATION_REQUIRED"],
+                enum: ["APPROVED", "REJECTED"],
                 description:
-                  "Decision based on how well the image matches the prompt.",
+                  "Decision based on the score: APPROVED if >= 7, REJECTED otherwise.",
               },
             },
             required: ["score", "status"],
