@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Challenge } from "./types";
+import { Challenge } from "../types";
 
 export default function DisneylandChallengeScreen() {
   const [challenges, setChallenges] = useState([

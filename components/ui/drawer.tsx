@@ -1,9 +1,11 @@
-import { Challenge } from "@/app/types";
+import { Challenge } from "@/types";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Sharing from "expo-sharing";
 import React, { useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
+  Image,
   Modal,
   PanResponder,
   StatusBar,
@@ -12,9 +14,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { captureRef } from "react-native-view-shot";
+
 import Icons from "../icons";
 
-const { width, height } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
 type InstagramStoryDrawerProps = {
   isVisible: boolean;
@@ -25,8 +29,10 @@ type InstagramStoryDrawerProps = {
 const InstagramStoryDrawer = ({
   isVisible,
   onClose,
-  challenge
+  challenge,
 }: InstagramStoryDrawerProps) => {
+  const ref = useRef<View>(null);
+
   const [caption, setCaption] = useState(
     "This pretzel deserves all the heart-eye emojis 🥨"
   );
@@ -60,6 +66,20 @@ const InstagramStoryDrawer = ({
       },
     })
   ).current;
+
+  const captureAndShareInstagramStory = async () => {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const imageUri = await captureRef(ref, {
+        format: "png",
+        quality: 1,
+      });
+      await Sharing.shareAsync(imageUri);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   if (!challenge) {
     return null;
@@ -227,6 +247,37 @@ const InstagramStoryDrawer = ({
             >
               Insta story preview
             </Text>
+            <View
+              ref={ref}
+              collapsable={false}
+              style={{
+                backgroundColor: "#fff",
+                width: "75%",
+                alignSelf: "center",
+                alignItems: "center",
+                padding: 20,
+                gap: 12,
+              }}
+            >
+              <Image
+                source={{
+                  uri: "https://placehold.co/225x245/000000/ffffff.png",
+                }}
+                style={{
+                  width: "100%",
+                  height: 245,
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: "#444444",
+                  fontFamily: "Halyard-Regular",
+                }}
+              >
+                {caption}
+              </Text>
+            </View>
           </View>
         </View>
         <View
@@ -235,7 +286,7 @@ const InstagramStoryDrawer = ({
             paddingHorizontal: 20,
           }}
         >
-          <TouchableOpacity>
+          <TouchableOpacity onPress={captureAndShareInstagramStory}>
             <LinearGradient
               colors={["#DD04E2", "#FC01B8", "#FD0191", "#FE700E"]}
               start={{ x: 0, y: 0 }}
