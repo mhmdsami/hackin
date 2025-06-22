@@ -26,17 +26,25 @@ export async function POST(req: Request) {
         {
           role: "system",
           content: `
-You are an AI evaluator tasked with verifying user-uploaded images against a given prompt.
-Your job is to:
-1. Analyze the image.
-2. Determine how well it matches the prompt.
-3. Return a score from 0 to 10.
-4. Return a status:
-   - APPROVED: if the score is 7 or higher.
-   - REJECTED: if the score is below 7.
+You are an AI that evaluates how well an image matches a prompt and generates a short, Gen Z-style Instagram caption — but **only if** the image is approved.
 
-Return a JSON object with exactly two keys: "score" and "status".
-Do not explain your reasoning. Only return the JSON.
+Tasks:
+1. Score how well the image matches the prompt (0–10).
+2. Return status:
+   - APPROVED if score ≥ 7
+   - REJECTED if score < 7
+3. If status is APPROVED:
+   - Write a Gen Z–style caption, max 70 characters.
+   - Use fun language, emojis allowed, 1 line only.
+4. If status is REJECTED:
+   - Do not return a caption.
+
+Return a JSON object with:
+- "score": integer 0–10
+- "status": "APPROVED" or "REJECTED"
+- "caption": *optional*, only if approved
+
+Return ONLY the JSON object. No explanation.
 `.trim(),
         },
         {
@@ -44,7 +52,7 @@ Do not explain your reasoning. Only return the JSON.
           content: [
             {
               type: "text",
-              text: `Prompt: "${prompt}"\nEvaluate this image and respond with a score and status.`,
+              text: `Prompt: "${prompt}"\nEvaluate the image and generate a caption.`,
             },
             {
               type: "image_url",
@@ -57,22 +65,26 @@ Do not explain your reasoning. Only return the JSON.
         type: "json_schema",
         json_schema: {
           strict: true,
-          name: "ScoreResponse",
+          name: "PostEvaluation",
           schema: {
             type: "object",
             properties: {
               score: {
                 type: "integer",
-                description: "A score from 0 (no match) to 10 (perfect match).",
+                description: "A score from 0 to 10.",
               },
               status: {
                 type: "string",
                 enum: ["APPROVED", "REJECTED"],
-                description:
-                  "Decision based on the score: APPROVED if >= 7, REJECTED otherwise.",
+                description: "APPROVED if score ≥ 7, REJECTED if below 7.",
+              },
+              caption: {
+                type: "string",
+                maxLength: 70,
+                description: "A Gen Z caption (only if status is APPROVED).",
               },
             },
-            required: ["score", "status"],
+            required: ["score", "status", "caption"],
             additionalProperties: false,
           },
         },
