@@ -1,5 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import Icons from "@/components/icons";
+import InstagramStoryDrawer from "@/components/ui/drawer";
+import React, { useState } from "react";
 import {
   ImageBackground,
   SafeAreaView,
@@ -8,35 +9,55 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-const challenges = [
-  {
-    id: 1,
-    emoji: "🏰",
-    title: "Snap the castle at sunset",
-    description: "Capture the golden hour",
-  },
-  {
-    id: 2,
-    emoji: "🥨",
-    title: "Pose with a pretzel",
-    description: "Share your Disney snack moment",
-  },
-  {
-    id: 3,
-    emoji: "🎢",
-    title: "Selfie on the favourite ride",
-    description: "Let us see your wholesome reaction",
-  },
-  {
-    id: 4,
-    emoji: "👸",
-    title: "Click with a character",
-    description: "Share your Disney snack moment",
-  },
-];
+import { Challenge } from "./types";
 
 export default function DisneylandChallengeScreen() {
+  const [challenges, setChallenges] = useState([
+    {
+      id: 1,
+      emoji: "🏰",
+      title: "Snap the castle at sunset",
+      description: "Capture the golden hour",
+      isCompleted: false,
+    },
+    {
+      id: 2,
+      emoji: "🥨",
+      title: "Pose with a pretzel",
+      description: "Share your Disney snack moment",
+      isCompleted: true,
+    },
+    {
+      id: 3,
+      emoji: "🎢",
+      title: "Selfie on the favourite ride",
+      description: "Let us see your wholesome reaction",
+      isCompleted: false,
+    },
+    {
+      id: 4,
+      emoji: "👸",
+      title: "Click with a character",
+      description: "Share your Disney snack moment",
+      isCompleted: false,
+    },
+  ]);
+
+  const completedChallenges = challenges.filter(
+    (challenge) => challenge.isCompleted
+  );
+
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+
+  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(
+    null
+  );
+
+  const handleOpenDrawer = (challenge: Challenge) => {
+    setIsDrawerVisible(true);
+    setSelectedChallenge(challenge);
+  };
+
   return (
     <SafeAreaView
       style={{
@@ -44,6 +65,11 @@ export default function DisneylandChallengeScreen() {
         backgroundColor: "#fff",
       }}
     >
+      <InstagramStoryDrawer
+        isVisible={isDrawerVisible}
+        onClose={() => setIsDrawerVisible(false)}
+        challenge={selectedChallenge}
+      />
       <ScrollView>
         <ImageBackground
           source={{
@@ -60,7 +86,7 @@ export default function DisneylandChallengeScreen() {
               justifyContent: "flex-end",
               paddingHorizontal: 20,
               paddingBottom: 32,
-              backgroundColor: "rgba(0,0,0,0.4)",
+              backgroundColor: "rgba(0,0,0,0.65)",
             }}
           >
             <View
@@ -74,7 +100,7 @@ export default function DisneylandChallengeScreen() {
               }}
             >
               <TouchableOpacity>
-                <Ionicons name="arrow-back" size={24} color="#fff" />
+                <Icons.BackArrow />
               </TouchableOpacity>
               <Text
                 style={{
@@ -82,7 +108,7 @@ export default function DisneylandChallengeScreen() {
                   color: "#fff",
                   textAlign: "center",
                   fontFamily: "Halyard-Medium",
-                  fontSize: 20,
+                  fontSize: 16,
                   marginBottom: 4,
                 }}
               >
@@ -99,7 +125,7 @@ export default function DisneylandChallengeScreen() {
               <Text
                 style={{
                   color: "#fff",
-                  fontSize: 26,
+                  fontSize: 24,
                   fontFamily: "Halyard-Medium",
                 }}
               >
@@ -113,15 +139,17 @@ export default function DisneylandChallengeScreen() {
                   paddingHorizontal: 10,
                   paddingVertical: 4,
                   borderRadius: 20,
+                  borderColor: "#E0D3A680",
+                  borderWidth: 1,
                 }}
               >
-                <Ionicons name="trophy-outline" size={16} color="#5C4B0E" />
+                <Icons.Trophy />
                 <Text
                   style={{
-                    fontWeight: "bold",
                     marginLeft: 6,
-                    fontSize: 14,
+                    fontSize: 12,
                     color: "#5C4B0E",
+                    fontFamily: "Halyard-Regular",
                   }}
                 >
                   100 credits
@@ -130,19 +158,31 @@ export default function DisneylandChallengeScreen() {
             </View>
             <Text
               style={{
-                color: "#eee",
-                fontSize: 14,
+                color: "#fff",
+                fontSize: 16,
                 marginBottom: 12,
+                opacity: 0.8,
+                fontFamily: "Halyard-Regular",
               }}
             >
               Complete and earn credits
             </Text>
-
             <View
               style={{
                 backgroundColor: "rgba(255,255,255,0.2)",
-                padding: 10,
+                padding: 12,
                 borderRadius: 12,
+                borderColor: "rgba(255,255,255,0.5)",
+                borderWidth: 2,
+                gap: 12,
+                shadowColor: "#000000",
+                shadowOffset: {
+                  width: 0,
+                  height: 80,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 100,
+                elevation: 24,
               }}
             >
               <View
@@ -155,26 +195,50 @@ export default function DisneylandChallengeScreen() {
                 <Text
                   style={{
                     color: "#fff",
-                    fontSize: 14,
+                    fontSize: 16,
                     marginBottom: 4,
+                    fontFamily: "Halyard-Medium",
                   }}
                 >
-                  0/4 completed
+                  Progress
                 </Text>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text
+                    style={{
+                      color:
+                        completedChallenges.length > 0 ? "#1CDD7D" : "#fff",
+                      fontSize: 12,
+                      fontFamily: "Halyard-Regular",
+                    }}
+                  >
+                    {completedChallenges.length}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#fff",
+                      fontSize: 12,
+                      fontFamily: "Halyard-Regular",
+                    }}
+                  >
+                    /{challenges.length} completed
+                  </Text>
+                </View>
               </View>
               <View
                 style={{
-                  height: 6,
-                  backgroundColor: "#ccc",
+                  height: 8,
+                  backgroundColor: "rgba(255,255,255,0.27)",
                   borderRadius: 10,
-                  overflow: "hidden",
                 }}
               >
                 <View
                   style={{
-                    width: "0%",
                     height: "100%",
-                    backgroundColor: "#FFD700",
+                    width: `${
+                      (completedChallenges.length / challenges.length) * 100
+                    }%`,
+                    backgroundColor: "#15D676",
+                    borderRadius: 10,
                   }}
                 />
               </View>
@@ -182,56 +246,67 @@ export default function DisneylandChallengeScreen() {
           </View>
         </ImageBackground>
 
-        {challenges.map((item) => (
-          <View
-            key={item.id}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              padding: 16,
-              borderBottomColor: "#eee",
-              borderBottomWidth: 1,
-            }}
-          >
-            <Text
+        <View style={{ flex: 1, backgroundColor: "#F8F8F8", gap: 8 }}>
+          {challenges.map((item) => (
+            <View
+              key={item.id}
               style={{
-                fontSize: 24,
-                marginRight: 12,
+                backgroundColor: item.isCompleted ? "#EBFFEE" : "#fff",
+                flexDirection: "row",
+                alignItems: "center",
+                paddingHorizontal: 24,
+                paddingVertical: 32,
               }}
             >
-              {item.emoji}
-            </Text>
-            <View style={{ flex: 1 }}>
               <Text
                 style={{
-                  fontWeight: "bold",
-                  fontSize: 16,
+                  fontSize: 30,
+                  marginRight: 12,
                 }}
               >
-                {item.title}
+                {item.emoji}
               </Text>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: "#666",
-                }}
-              >
-                {item.description}
-              </Text>
+              <View style={{ flex: 1, gap: 2 }}>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: "#222222",
+                    fontFamily: "Halyard-Medium",
+                  }}
+                >
+                  {item.title}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: "#444444",
+                    fontFamily: "Halyard-Regular",
+                  }}
+                >
+                  {item.description}
+                </Text>
+              </View>
+              {item.isCompleted ? (
+                <Icons.Checkmark />
+              ) : (
+                <TouchableOpacity
+                  style={{
+                    marginLeft: 12,
+                    borderWidth: 1,
+                    borderColor: "#ccc",
+                    padding: 6,
+                    borderRadius: 8,
+                  }}
+                  onPress={() => {
+                    handleOpenDrawer(item);
+                  }}
+                >
+                  <Icons.Upload />
+                </TouchableOpacity>
+              )}
             </View>
-            <TouchableOpacity
-              style={{
-                marginLeft: 12,
-                borderWidth: 1,
-                borderColor: "#ccc",
-                padding: 6,
-                borderRadius: 8,
-              }}
-            >
-              <Ionicons name="camera-outline" size={24} color="#333" />
-            </TouchableOpacity>
-          </View>
-        ))}
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
