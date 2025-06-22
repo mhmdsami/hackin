@@ -1,7 +1,7 @@
 import { Challenge } from "@/types";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Sharing from "expo-sharing";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Animated,
   Dimensions,
@@ -21,28 +21,34 @@ import Icons from "../icons";
 const { height } = Dimensions.get("window");
 
 type InstagramStoryDrawerProps = {
+  isLoading: boolean;
   isVisible: boolean;
   onClose: () => void;
   challenge: Challenge | null;
   image: string | null;
   generatedCaption: string | undefined;
   markChallengeAsCompleted: () => void;
+  error?: string | null;
 };
 
 const InstagramStoryDrawer = ({
+  isLoading,
   isVisible,
   onClose,
   challenge,
   image,
   generatedCaption,
   markChallengeAsCompleted,
+  error,
 }: InstagramStoryDrawerProps) => {
   const ref = useRef<View>(null);
 
-  const [caption, setCaption] = useState(
-    generatedCaption || "Check out my latest challenge!"
-  );
+  const [caption, setCaption] = useState("Check out my latest challenge!");
   const translateY = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (generatedCaption) setCaption(generatedCaption);
+  }, [generatedCaption]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -89,6 +95,229 @@ const InstagramStoryDrawer = ({
 
   if (!challenge || !image) {
     return null;
+  }
+
+  if (isLoading) {
+    return (
+      <Modal
+        visible={isVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={onClose}
+      >
+        <StatusBar barStyle="light-content" backgroundColor="rgba(0,0,0,0.5)" />
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+          activeOpacity={1}
+          onPress={onClose}
+        >
+          <View style={{ flex: 1 }} />
+        </TouchableOpacity>
+        <Animated.ScrollView
+          style={[
+            {
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              backgroundColor: "#fff",
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              paddingBottom: 40,
+              height: height * 0.3,
+            },
+            {
+              transform: [{ translateY }],
+            },
+          ]}
+        >
+          <View
+            style={{
+              alignItems: "center",
+            }}
+            {...panResponder.panHandlers}
+          >
+            <View
+              style={{
+                width: 40,
+                height: 4,
+                backgroundColor: "#E0E0E0",
+                borderRadius: 2,
+                marginTop: 20,
+              }}
+            />
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingVertical: 15,
+              borderBottomWidth: 1,
+              borderBottomColor: "#F0F0F0",
+              paddingHorizontal: 20,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                fontFamily: "Halyard-Medium",
+                color: "#000",
+              }}
+            >
+              {challenge.title}
+            </Text>
+            <TouchableOpacity onPress={onClose}>
+              <Icons.Close />
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingVertical: 15,
+              gap: 8,
+              paddingHorizontal: 20,
+            }}
+          >
+            <Icons.Loader />
+            <Text
+              style={{
+                color: "#A4563B",
+                fontSize: 16,
+                flex: 1,
+                fontFamily: "Halyard-Regular",
+              }}
+            >
+              Uploading and checking the image...
+            </Text>
+          </View>
+        </Animated.ScrollView>
+      </Modal>
+    );
+  }
+
+  if (error) {
+    return (
+      <Modal
+        visible={isVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={onClose}
+      >
+        <StatusBar barStyle="light-content" backgroundColor="rgba(0,0,0,0.5)" />
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+          activeOpacity={1}
+          onPress={onClose}
+        >
+          <View style={{ flex: 1 }} />
+        </TouchableOpacity>
+        <Animated.ScrollView
+          style={[
+            {
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              backgroundColor: "#fff",
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              paddingBottom: 40,
+              height: height * 0.3,
+            },
+            {
+              transform: [{ translateY }],
+            },
+          ]}
+        >
+          <View
+            style={{
+              alignItems: "center",
+            }}
+            {...panResponder.panHandlers}
+          >
+            <View
+              style={{
+                width: 40,
+                height: 4,
+                backgroundColor: "#E0E0E0",
+                borderRadius: 2,
+                marginTop: 20,
+              }}
+            />
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingVertical: 15,
+              borderBottomWidth: 1,
+              borderBottomColor: "#F0F0F0",
+              paddingHorizontal: 20,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                fontFamily: "Halyard-Medium",
+                color: "#000",
+              }}
+            >
+              {challenge.title}
+            </Text>
+            <TouchableOpacity onPress={onClose}>
+              <Icons.Close />
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              paddingVertical: 15,
+              gap: 12,
+              paddingHorizontal: 20,
+            }}
+          >
+            <Text
+              style={{
+                color: "#A4563B",
+                fontSize: 16,
+                flex: 1,
+                fontFamily: "Halyard-Regular",
+              }}
+            >
+              {error}
+            </Text>
+            <TouchableOpacity
+              onPress={onClose}
+              style={{
+                backgroundColor: "#8000FF",
+                alignItems: "center",
+                paddingVertical: 16,
+                paddingHorizontal: 12,
+                borderRadius: 12,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: 16,
+                  fontFamily: "Halyard-Medium",
+                }}
+              >
+                Try again
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.ScrollView>
+      </Modal>
+    );
   }
 
   return (
@@ -208,18 +437,18 @@ const InstagramStoryDrawer = ({
           style={{
             paddingHorizontal: 20,
             gap: 12,
-            paddingVertical: 12,
+            marginBottom: 20,
           }}
         >
           <TextInput
             style={{
               fontSize: 16,
               color: "#333",
-              minHeight: 50,
               borderWidth: 1,
               borderColor: "#E0E0E0",
               borderRadius: 12,
               paddingHorizontal: 10,
+              paddingVertical: 16,
             }}
             value={caption}
             onChangeText={setCaption}

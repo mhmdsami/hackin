@@ -9,7 +9,7 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { Challenge, ChallengeAPIResponse } from "../types";
 
@@ -52,6 +52,9 @@ export default function DisneylandChallengeScreen() {
     (challenge) => challenge.isCompleted
   );
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
 
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(
@@ -66,7 +69,7 @@ export default function DisneylandChallengeScreen() {
       allowsMultipleSelection: false,
       allowsEditing: true,
       quality: 1,
-      aspect: [16, 19]
+      aspect: [16, 19],
     });
 
     if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -74,6 +77,10 @@ export default function DisneylandChallengeScreen() {
     }
 
     const selectedImage = result.assets[0];
+
+    setIsLoading(true);
+    setSelectedChallenge(challenge);
+    setImage(selectedImage.uri);
 
     const formData = new FormData();
 
@@ -100,6 +107,8 @@ export default function DisneylandChallengeScreen() {
 
     if (!rawResponse.ok) {
       console.error("Failed to upload image");
+      setIsLoading(false);
+      setError("Failed to upload image. Please try again.");
       return;
     }
 
@@ -108,12 +117,12 @@ export default function DisneylandChallengeScreen() {
     console.log("API Response:", response);
 
     if (response.status === "REJECTED") {
-      // TODO: show a toast or alert to the user
+      setIsLoading(false);
+      setError("Your submission was rejected. Please try again.");
       return;
     }
 
-    setSelectedChallenge(challenge);
-    setImage(selectedImage.uri);
+    setIsLoading(false);
     setCaption(response.caption);
     setIsDrawerVisible(true);
   };
@@ -133,19 +142,27 @@ export default function DisneylandChallengeScreen() {
     }
 
     if (completedChallenges.length === challenges.length) {
-      handleAllChallengesCompleted();
+      setIsCompletedModalVisible(true);
     }
   };
 
-  const handleAllChallengesCompleted = () => {
-    setIsCompletedModalVisible(true);
+  const handleCloseDrawer = () => {
+    setIsDrawerVisible(false);
+    setImage(null);
+    setSelectedChallenge(null);
+    setCaption(undefined);
+    setError(null);
+    setIsLoading(false);
+    setIsCompletedModalVisible(false);
   };
 
   return (
     <View>
       <InstagramStoryDrawer
-        isVisible={isDrawerVisible}
-        onClose={() => setIsDrawerVisible(false)}
+        isLoading={isLoading}
+        isVisible={isLoading || !!error || isDrawerVisible}
+        error={error}
+        onClose={handleCloseDrawer}
         image={image}
         challenge={selectedChallenge}
         generatedCaption={caption}
@@ -179,7 +196,7 @@ export default function DisneylandChallengeScreen() {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                position: "relative"
+                position: "relative",
               }}
             >
               <TouchableOpacity>
