@@ -148,7 +148,7 @@ export default function DisneylandChallengeScreen() {
             uri: "https://cdn-imgix.headout.com/media/images/cf0b021f5a9c9996576761ed1bdacc2b-6645-Paris-Disneyland-ParisMultidayTickets-2.jpg?w=613.2&h=384.3&crop=faces&auto=compress,format&fit=min",
           }}
           style={{
-            height: 300,
+            height: "auto",
             width: "100%",
           }}
         >
@@ -156,17 +156,14 @@ export default function DisneylandChallengeScreen() {
             style={{
               flex: 1,
               justifyContent: "flex-end",
-              paddingHorizontal: 20,
+              paddingTop: 20,
               paddingBottom: 32,
+              paddingHorizontal: 20,
               backgroundColor: "rgba(0,0,0,0.65)",
             }}
           >
             <View
               style={{
-                position: "absolute",
-                top: 72,
-                left: 20,
-                right: 20,
                 flexDirection: "row",
                 alignItems: "center",
               }}
@@ -192,6 +189,7 @@ export default function DisneylandChallengeScreen() {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
+                marginTop: 32,
               }}
             >
               <Text
