@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { Challenge, ChallengeAPIResponse } from "../types";
+import { BlurView } from "expo-blur";
 
 export default function DisneylandChallengeScreen() {
   const [challenges, setChallenges] = useState([
@@ -128,12 +129,7 @@ export default function DisneylandChallengeScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: "#fff",
-      }}
-    >
+    <View>
       <InstagramStoryDrawer
         isVisible={isDrawerVisible}
         onClose={() => setIsDrawerVisible(false)}
@@ -156,7 +152,7 @@ export default function DisneylandChallengeScreen() {
             style={{
               flex: 1,
               justifyContent: "flex-end",
-              paddingTop: 20,
+              paddingTop: 64,
               paddingBottom: 32,
               paddingHorizontal: 20,
               backgroundColor: "rgba(0,0,0,0.65)",
@@ -166,6 +162,7 @@ export default function DisneylandChallengeScreen() {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
+                position: "relative"
               }}
             >
               <TouchableOpacity>
@@ -179,6 +176,9 @@ export default function DisneylandChallengeScreen() {
                   fontFamily: "Halyard-Medium",
                   fontSize: 16,
                   marginBottom: 4,
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
                 }}
               >
                 Headout Challenges
@@ -239,79 +239,79 @@ export default function DisneylandChallengeScreen() {
             </Text>
             <View
               style={{
-                backgroundColor: "rgba(255,255,255,0.2)",
-                padding: 12,
                 borderRadius: 12,
+                overflow: "hidden",
                 borderColor: "rgba(255,255,255,0.5)",
                 borderWidth: 2,
-                gap: 12,
-                shadowColor: "#000000",
-                shadowOffset: {
-                  width: 0,
-                  height: 80,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 100,
-                elevation: 24,
               }}
             >
-              <View
+              <BlurView
+                intensity={40}
+                tint="systemUltraThinMaterialLight"
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={{
-                    color: "#fff",
-                    fontSize: 16,
-                    marginBottom: 4,
-                    fontFamily: "Halyard-Medium",
-                  }}
-                >
-                  Progress
-                </Text>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Text
-                    style={{
-                      color:
-                        completedChallenges.length > 0 ? "#1CDD7D" : "#fff",
-                      fontSize: 12,
-                      fontFamily: "Halyard-Regular",
-                    }}
-                  >
-                    {completedChallenges.length}
-                  </Text>
-                  <Text
-                    style={{
-                      color: "#fff",
-                      fontSize: 12,
-                      fontFamily: "Halyard-Regular",
-                    }}
-                  >
-                    /{challenges.length} completed
-                  </Text>
-                </View>
-              </View>
-              <View
-                style={{
-                  height: 8,
-                  backgroundColor: "rgba(255,255,255,0.27)",
-                  borderRadius: 10,
+                  padding: 12,
+                  borderColor: "rgba(255,255,255,0.5)",
+                  gap: 12,
                 }}
               >
                 <View
                   style={{
-                    height: "100%",
-                    width: `${
-                      (completedChallenges.length / challenges.length) * 100
-                    }%`,
-                    backgroundColor: "#15D676",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#fff",
+                      fontSize: 16,
+                      marginBottom: 4,
+                      fontFamily: "Halyard-Medium",
+                    }}
+                  >
+                    Progress
+                  </Text>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Text
+                      style={{
+                        color:
+                          completedChallenges.length > 0 ? "#1CDD7D" : "#fff",
+                        fontSize: 12,
+                        fontFamily: "Halyard-Regular",
+                      }}
+                    >
+                      {completedChallenges.length}
+                    </Text>
+                    <Text
+                      style={{
+                        color: "#fff",
+                        fontSize: 12,
+                        fontFamily: "Halyard-Regular",
+                      }}
+                    >
+                      /{challenges.length} completed
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    height: 8,
+                    backgroundColor: "rgba(255,255,255,0.27)",
                     borderRadius: 10,
                   }}
-                />
-              </View>
+                >
+                  <View
+                    style={{
+                      height: "100%",
+                      width: `${
+                        (completedChallenges.length / challenges.length) * 100
+                      }%`,
+                      backgroundColor: "#15D676",
+                      borderRadius: 10,
+                    }}
+                  />
+                </View>
+              </BlurView>
             </View>
           </View>
         </ImageBackground>
@@ -376,6 +376,6 @@ export default function DisneylandChallengeScreen() {
           ))}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
