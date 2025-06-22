@@ -3,6 +3,7 @@ import Camera from "./camera";
 import CheckCircle from "./check-circle";
 import Checkmark from "./checkmark";
 import Close from "./close";
+import Info from "./info";
 import Trophy from "./trophy";
 import Upload from "./upload";
 
@@ -12,6 +13,7 @@ export default {
   CheckCircle,
   Checkmark,
   Close,
+  Info,
   Trophy,
   Upload,
 };

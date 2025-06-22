@@ -1,17 +1,17 @@
 import Icons from "@/components/icons";
+import CompletedModal from "@/components/ui/completed-modal";
 import InstagramStoryDrawer from "@/components/ui/drawer";
+import { BlurView } from "expo-blur";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
   ImageBackground,
-  SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { Challenge, ChallengeAPIResponse } from "../types";
-import { BlurView } from "expo-blur";
 
 export default function DisneylandChallengeScreen() {
   const [challenges, setChallenges] = useState([
@@ -58,12 +58,15 @@ export default function DisneylandChallengeScreen() {
     null
   );
 
+  const [isCompletedModalVisible, setIsCompletedModalVisible] = useState(false);
+
   const handleChallenge = async (challenge: Challenge) => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: "images",
       allowsMultipleSelection: false,
       allowsEditing: true,
       quality: 1,
+      aspect: [16, 19]
     });
 
     if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -124,8 +127,18 @@ export default function DisneylandChallengeScreen() {
             : challenge
         )
       );
+      setImage(null);
+      setSelectedChallenge(null);
       setIsDrawerVisible(false);
     }
+
+    if (completedChallenges.length === challenges.length) {
+      handleAllChallengesCompleted();
+    }
+  };
+
+  const handleAllChallengesCompleted = () => {
+    setIsCompletedModalVisible(true);
   };
 
   return (
@@ -137,6 +150,10 @@ export default function DisneylandChallengeScreen() {
         challenge={selectedChallenge}
         generatedCaption={caption}
         markChallengeAsCompleted={handleMarkChallengeAsCompleted}
+      />
+      <CompletedModal
+        isVisible={isCompletedModalVisible}
+        onClose={() => setIsCompletedModalVisible(false)}
       />
       <ScrollView>
         <ImageBackground

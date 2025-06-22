@@ -109,7 +109,7 @@ const InstagramStoryDrawer = ({
       >
         <View style={{ flex: 1 }} />
       </TouchableOpacity>
-      <Animated.View
+      <Animated.ScrollView
         style={[
           {
             position: "absolute",
@@ -139,6 +139,7 @@ const InstagramStoryDrawer = ({
               height: 4,
               backgroundColor: "#E0E0E0",
               borderRadius: 2,
+              marginTop: 20,
             }}
           />
         </View>
@@ -203,16 +204,6 @@ const InstagramStoryDrawer = ({
             </Text>
           </TouchableOpacity>
         </View>
-        <Text
-          style={{
-            fontSize: 18,
-            color: "#444",
-            paddingHorizontal: 20,
-            fontFamily: "Halyard-Medium",
-          }}
-        >
-          Let us help you with your instagram story
-        </Text>
         <View
           style={{
             paddingHorizontal: 20,
@@ -336,7 +327,7 @@ const InstagramStoryDrawer = ({
             </Text>
           </TouchableOpacity>
         </View>
-      </Animated.View>
+      </Animated.ScrollView>
     </Modal>
   );
 };
