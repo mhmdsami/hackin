@@ -40,7 +40,7 @@ const InstagramStoryDrawer = ({
   const ref = useRef<View>(null);
 
   const [caption, setCaption] = useState(
-    generatedCaption ?? "Check out my latest challenge!"
+    generatedCaption || "Check out my latest challenge!"
   );
   const translateY = useRef(new Animated.Value(0)).current;
 
@@ -87,7 +87,7 @@ const InstagramStoryDrawer = ({
     }
   };
 
-  if (!challenge || !image || !caption) {
+  if (!challenge || !image) {
     return null;
   }
 
