@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Challenge } from "../types";
+import { Challenge, ChallengeAPIResponse } from "../types";
 
 export default function DisneylandChallengeScreen() {
   const [challenges, setChallenges] = useState([
@@ -26,7 +26,7 @@ export default function DisneylandChallengeScreen() {
       emoji: "🥨",
       title: "Pose with a pretzel",
       description: "Share your Disney snack moment",
-      isCompleted: true,
+      isCompleted: false,
     },
     {
       id: 3,
@@ -45,6 +45,7 @@ export default function DisneylandChallengeScreen() {
   ]);
 
   const [image, setImage] = useState<string | null>(null);
+  const [caption, setCaption] = useState<string>();
 
   const completedChallenges = challenges.filter(
     (challenge) => challenge.isCompleted
@@ -58,20 +59,59 @@ export default function DisneylandChallengeScreen() {
 
   const handleChallenge = async (challenge: Challenge) => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: "images",
+      allowsMultipleSelection: false,
       allowsEditing: true,
-      aspect: [16, 19],
       quality: 1,
     });
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
+    if (result.canceled || !result.assets || result.assets.length === 0) {
+      return;
     }
 
-    // TODO: verify image
+    const selectedImage = result.assets[0];
 
-    setIsDrawerVisible(true);
+    const formData = new FormData();
+
+    formData.append("prompt", challenge.title);
+    formData.append("image", {
+      uri: selectedImage.uri,
+      name: selectedImage.fileName || "image.jpg",
+      type: selectedImage.type || "image/jpeg",
+    } as any);
+
+    const rawResponse = await fetch(
+      new URL(
+        `/api/upload-and-verify`,
+        process.env.EXPO_PUBLIC_API_BASE_URL
+      ).toString(),
+      {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (!rawResponse.ok) {
+      console.error("Failed to upload image");
+      return;
+    }
+
+    const response: ChallengeAPIResponse = await rawResponse.json();
+
+    console.log("API Response:", response);
+
+    if (response.status === "REJECTED") {
+      // TODO: show a toast or alert to the user
+      return;
+    }
+
     setSelectedChallenge(challenge);
+    setImage(selectedImage.uri);
+    setCaption(response.caption);
+    setIsDrawerVisible(true);
   };
 
   const handleMarkChallengeAsCompleted = () => {
@@ -99,6 +139,7 @@ export default function DisneylandChallengeScreen() {
         onClose={() => setIsDrawerVisible(false)}
         image={image}
         challenge={selectedChallenge}
+        generatedCaption={caption}
         markChallengeAsCompleted={handleMarkChallengeAsCompleted}
       />
       <ScrollView>

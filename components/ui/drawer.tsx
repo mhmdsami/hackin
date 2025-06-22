@@ -25,6 +25,7 @@ type InstagramStoryDrawerProps = {
   onClose: () => void;
   challenge: Challenge | null;
   image: string | null;
+  generatedCaption: string | undefined;
   markChallengeAsCompleted: () => void;
 };
 
@@ -33,12 +34,13 @@ const InstagramStoryDrawer = ({
   onClose,
   challenge,
   image,
+  generatedCaption,
   markChallengeAsCompleted,
 }: InstagramStoryDrawerProps) => {
   const ref = useRef<View>(null);
 
   const [caption, setCaption] = useState(
-    "This pretzel deserves all the heart-eye emojis 🥨"
+    generatedCaption ?? "Check out my latest challenge!"
   );
   const translateY = useRef(new Animated.Value(0)).current;
 
@@ -85,7 +87,7 @@ const InstagramStoryDrawer = ({
     }
   };
 
-  if (!challenge || !image) {
+  if (!challenge || !image || !caption) {
     return null;
   }
 

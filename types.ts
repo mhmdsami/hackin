@@ -4,4 +4,15 @@ export type Challenge = {
   title: string;
   description: string;
   isCompleted: boolean;
-}
+};
+
+export type ChallengeAPIResponse =
+  | {
+      status: "APPROVED";
+      score: number;
+      caption: string;
+    }
+  | {
+      status: "REJECTED";
+      score: number;
+    };
